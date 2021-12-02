@@ -55,7 +55,7 @@ namespace DotLiquidExtended
                 Template.RegisterSafeType(type, props);
             }
         }
-        public static void RegisterSafeTypes(List<Assembly> assemblies)
+        public static void RegisterSafeTypes(IEnumerable<Assembly> assemblies)
         {
             foreach (var assembly in assemblies)
             {
