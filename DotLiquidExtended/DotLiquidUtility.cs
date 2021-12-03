@@ -10,7 +10,7 @@ namespace DotLiquidExtended
 {
     public static class DotLiquidUtility
     {
-        private static readonly string _seperator = "%@%";
+        private static readonly string _indicator = "%@%";
 
         // Func<string, IEnumerable<string>, bool> => Tag, Filters
         public static RenderResult RenderWithValidation(string templateText, object data, Func<string, IEnumerable<string>, bool> ignoreValidationCondition = null)
@@ -44,9 +44,9 @@ namespace DotLiquidExtended
             }
             var template2 = Template.Parse(templateText);
             var result = template2.RenderAnonymousObject(data);
-            var matches = Regex.Matches(result, $"{_seperator}(.+){_seperator}", RegexOptions.Compiled)
+            var matches = Regex.Matches(result, $"{_indicator}(.+){_indicator}", RegexOptions.Compiled)
                 .Cast<Match>()
-                .Select(x => x.Value.Replace(_seperator, "")).Distinct();
+                .Select(x => x.Value.Replace(_indicator, "")).Distinct();
 
             if (matches.Any())
             {
