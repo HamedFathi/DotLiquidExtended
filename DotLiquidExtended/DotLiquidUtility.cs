@@ -4,11 +4,73 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace DotLiquidExtended
 {
     public static class DotLiquidUtility
     {
+        private static readonly string _seperator = "%@%";
+
+        // Func<string, IEnumerable<string>, bool> => Tag, Filters
+        public static RenderResult RenderWithValidation(string templateText, object data, Func<string, IEnumerable<string>, bool> ignoreValidationCondition = null)
+        {
+            Template.RegisterFilter(typeof(VariableFilter));
+            var tmpl = Template.Parse(templateText);
+
+            if (tmpl.Errors.Any())
+            {
+                return new RenderResult
+                {
+                    Template = tmpl,
+                    Result = null,
+                    Errors = tmpl.Errors
+                };
+            }
+
+            var vars = tmpl.GetAllNodes()
+                .Where(x => x is Variable);
+
+            foreach (Variable item in vars)
+            {
+                var filters = item.Filters.Select(x => x.Name);
+
+                var ignore = ignoreValidationCondition != null && (ignoreValidationCondition?.Invoke(item.Name, filters) == true);
+
+                if (!filters.Contains("ignore_safe_var") || !ignore)
+                {
+                    templateText = templateText.Replace(item.Name, $"{item.Name} | safe_var:'{item.Name}'");
+                }
+            }
+            var template2 = Template.Parse(templateText);
+            var result = template2.RenderAnonymousObject(data);
+            var matches = Regex.Matches(result, $"{_seperator}(.+){_seperator}", RegexOptions.Compiled)
+                .Cast<Match>()
+                .Select(x => x.Value.Replace(_seperator, "")).Distinct();
+
+            if (matches.Any())
+            {
+                var exceptions = new List<Exception>();
+                foreach (var match in matches)
+                {
+                    exceptions.Add(new ArgumentNullException($"'{match}' is null or does not exist."));
+                }
+                return new RenderResult
+                {
+                    Template = tmpl,
+                    Result = null,
+                    Errors = exceptions
+                };
+            }
+
+            return new RenderResult
+            {
+                Template = tmpl,
+                Result = result,
+                Errors = null
+            };
+
+        }
         public static void RegisterCustomFilters()
         {
             Template.RegisterFilter(typeof(DotLiquidCustomFilters));
