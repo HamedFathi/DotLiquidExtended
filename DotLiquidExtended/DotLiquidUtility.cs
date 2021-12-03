@@ -24,12 +24,11 @@ namespace DotLiquidExtended
                 {
                     Template = tmpl,
                     Result = null,
-                    Errors = tmpl.Errors
+                    Errors = tmpl.Errors.Select(x => x.Message)
                 };
             }
 
-            var vars = tmpl.GetAllNodes()
-                .Where(x => x is Variable);
+            var vars = tmpl.GetAllNodes().Where(x => x is Variable);
 
             foreach (Variable item in vars)
             {
@@ -50,10 +49,10 @@ namespace DotLiquidExtended
 
             if (matches.Any())
             {
-                var exceptions = new List<Exception>();
+                var exceptions = new List<string>();
                 foreach (var match in matches)
                 {
-                    exceptions.Add(new ArgumentNullException($"'{match}' is null or does not exist."));
+                    exceptions.Add($"'{match}' variable is null or does not exist.");
                 }
                 return new RenderResult
                 {
