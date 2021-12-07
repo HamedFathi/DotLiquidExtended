@@ -75,9 +75,47 @@ RenderResult RenderWithValidation(string templateText, object data, Func<string,
 
 In fact, this method simulate a strict variable/property checking because if `dotLiquid` is not able to find a variable just ignores it and renders nothing without any warning or error.
 
+* `templateText`: You should pass your template a text.
+* `data`: is your anonymous object to fill template. `new { YourObjectName = YourObject }`
+* `ignoreValidationCondition` is a functionality that help you to ignore some variables or filters for checking.
+
+```cs
+// Func<string, IEnumerable<string>, bool> ignoreValidationCondition
+
+// Filters are related to the current variable. 
+(varName, filters) => {
+    if(varName.Contains('name')) return true;
+    if(filters != null && filters.Contains('nullable')) return true;
+    return false;
+}
+```
+
+Obviously, The entire variables with `name` in their names will ignore from checking same as all variable with `nullable` filter. `myVar | nullable`
+
+By default you can use a pre-defined `ignore_safe_var`
+ filter to skip this checking.
+
+In the end you will see a result similar to the following class.
+
+```cs
+public class RenderResult
+{
+    // dotLiquid template object.
+    public Template Template { get; set; }
+    
+    // Contains whole errors.
+    // It will be null if there is no error.
+    public IEnumerable<string> Errors { get; set; }
+    
+    // The final rendered result. 
+    // It will be null if you have an error.
+    public string Result { get; set; }
+}
+```
+ 
 ### `Liquid` related works
 
 * [Fluid](https://github.com/sebastienros/fluid)
 * [Scriban](https://github.com/scriban/scriban)
 * [LiquidJS](https://liquidjs.com/)
-* [ACE Editor](https://ace.c9.io/build/kitchen-sink.html) Change `Mode` to `Liquid`.
+* [ACE Editor](https://ace.c9.io/build/kitchen-sink.html) Change `Document` and  `Mode` to `Liquid`.
