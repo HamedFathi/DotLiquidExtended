@@ -21,9 +21,7 @@ namespace DotLiquidExtended
                 {
                     throw new ArgumentNullException(nameof(templateName), "Template name must be set.");
                 }
-                var len = templateName.Length;
-                templateName = templateName[0] == '"' ? templateName.Substring(1) : templateName;
-                templateName = templateName[len - 1] == '"' ? templateName.Substring(0, len - 1) : templateName;
+                templateName = templateName.Trim('\"').Trim('\'');
                 return _includes.ContainsKey(templateName) ? _includes[templateName] : "The key not found";
             }
         }

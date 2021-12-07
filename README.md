@@ -19,7 +19,40 @@ dotnet add package DotLiquidExtended
 
 ### In-Memory File System
 
-In default mode. `dotLiquid` just reads template files from disk. `InMemoryFileSystem` helps you to load your templates from memory.
+By default `dotLiquid` just reads template files from disk via `include` functionality. `InMemoryFileSystem` helps you to use `include` method to load your templates from memory.
+
+
+```cs
+// In-memory templates
+public static class Templates
+{
+    public static string GetTemplate1()
+    {
+        // You can use single qoutes too.
+        // {% include 'tmpl2' %}
+        return @"Hello, {{name}} {% include ""tmpl2"" %}.";
+    }
+
+    public static string GetTemplate2()
+    {
+        return @"{{family}}";
+    }
+}
+
+// Template engine
+using DotLiquidExtended;
+
+Template.FileSystem = new InMemoryFileSystem(new()
+{
+    // Key, Value
+    { "tmpl1", Templates.GetTemplate1() },
+    { "tmpl2", Templates.GetTemplate2() }
+});
+Template template = Template.Parse(Templates.GetTemplate1());
+var result = template.Render(Hash.FromAnonymousObject(
+    new { Name = "Hamed", Family = "Fathi" }
+));
+```
 
 ### Extensions
 
@@ -90,7 +123,7 @@ In fact, this method simulate a strict variable/property checking because if `do
 }
 ```
 
-Obviously, The entire variables with `name` in their names will ignore from checking same as all variable with `nullable` filter. `myVar | nullable`
+Obviously, The entire variables with the exact `name` word in their names will ignore from checking same as all variables with `nullable` filter. e.g. `myVar | nullable`
 
 By default you can use a pre-defined `ignore_safe_var`
  filter to skip this checking.
