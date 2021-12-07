@@ -149,7 +149,9 @@ public class RenderResult
 ```
 
 ![pic2](https://user-images.githubusercontent.com/8418700/145047276-28c57fe3-b3c6-42d3-add1-fcc2feb3fa42.png)
- 
+
+ <hr/>
+
 ### `Liquid` related works
 
 * [Fluid](https://github.com/sebastienros/fluid)
