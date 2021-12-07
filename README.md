@@ -54,6 +54,8 @@ var result = template.Render(Hash.FromAnonymousObject(
 ));
 ```
 
+![pic1](https://user-images.githubusercontent.com/8418700/145047229-04dac9cb-6f48-4f61-9f36-a876dc233386.png)
+
 ### Extensions
 
 There are bunch of useful extensions as following:
@@ -145,6 +147,8 @@ public class RenderResult
     public string Result { get; set; }
 }
 ```
+
+![pic2](https://user-images.githubusercontent.com/8418700/145047276-28c57fe3-b3c6-42d3-add1-fcc2feb3fa42.png)
  
 ### `Liquid` related works
 
