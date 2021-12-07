@@ -69,7 +69,7 @@ string RenderAnonymousObject(this Template template, object obj, bool inclueBase
 
 // It sets 'RootObject' for your anonymous object.
 // new { RootObject = obj }
-// You have access to it inside a template via 'root_object'.
+// You have access to it inside a template via 'root_object' with default naming convention.
 RenderObject(this Template template, object obj, bool inclueBaseClassProperties = false, IFormatProvider formatProvider = null)
 
 // Returns all AST nodes recursively.
