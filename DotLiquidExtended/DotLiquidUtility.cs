@@ -10,7 +10,7 @@ namespace DotLiquidExtended
 {
     public static class DotLiquidUtility
     {
-        private static readonly string _indicator = "%@%";
+        private static readonly string _indicator = "%@%@@%@%";
 
         // Func<string, IEnumerable<string>, bool> => Tag, Filters
         public static RenderResult RenderWithValidation(string templateText, object data, Func<string, IEnumerable<string>, bool> ignoreValidationCondition = null)
@@ -38,7 +38,7 @@ namespace DotLiquidExtended
 
                 if (!filters.Contains("ignore_safe_var") || !ignore)
                 {
-                    templateText = templateText.Replace(item.Name, $"{item.Name} | safe_var:'{item.Name}'");
+                    templateText = templateText.Replace(item.Name, $"{item.Name} | safe_var:'{item.Name}' ");
                 }
             }
             var template2 = Template.Parse(templateText);
@@ -69,10 +69,6 @@ namespace DotLiquidExtended
                 Errors = null
             };
 
-        }
-        public static void RegisterCustomFilters()
-        {
-            Template.RegisterFilter(typeof(DotLiquidCustomFilters));
         }
         public static void RegisterSafeTypes(params Type[] types)
         {

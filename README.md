@@ -17,84 +17,63 @@ dotnet add package DotLiquidExtended
 
 <hr/>
 
+### In-Memory File System
 
-<hr/>
+In default mode. `dotLiquid` just reads template files from disk. `InMemoryFileSystem` helps you to load your templates from memory.
 
-**Models**
+### Extensions
 
-```cs
-// Person.cs
-public class Person
-{
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string FamilyName { get; set; }
-    public float Age { get; set; }
-    public DateTimeOffset BithDate { get; set; }
-    public IEnumerable<Phone> Phones { get; set; }
-    public IEnumerable<Address> Addresses { get; set; }
-    public Person()
-    {
-        Phones = new List<Phone>();
-        Addresses = new List<Address>();
-    }
-}
-
-// Address.cs
-public class Address
-{
-    public string Country { get; set; }
-    public string City { get; set; }
-    public string MainStreet { get; set; }
-    public string Info { get; set; }
-    public string No { get; set; }
-}
-
-// Phone.cs
-public class Phone
-{
-    public string Code { get; set; }
-    public string Number { get; set; }
-}
-```
-
-**Fake Data Generator**
+There are bunch of useful extensions as following:
 
 ```cs
-// PeopleDataGenerator.cs
-using Bogus;
+using DotLiquidExtended;
 
-public static class PeopleDataGenerator
-{
-    public static IEnumerable<Person> GetPeople(int count = 200)
-    {
-        var testPhone = new Faker<Phone>()
-                .StrictMode(true)
-                .RuleFor(p => p.Code, f => f.Address.CountryCode())
-                .RuleFor(p => p.Number, f => f.Phone.PhoneNumber())
-                ;
-        var testAddress = new Faker<Address>()
-                .StrictMode(true)
-                .RuleFor(a => a.Country, f => f.Address.Country())
-                .RuleFor(a => a.City, f => f.Address.City())
-                .RuleFor(a => a.No, f => f.Address.BuildingNumber())
-                .RuleFor(a => a.Info, f => f.Address.FullAddress())
-                .RuleFor(a => a.MainStreet, f => f.Address.StreetAddress())
-                ;
-        var testPerson = new Faker<Person>()
-                .StrictMode(true)
-                .RuleFor(p => p.Id, f => Guid.NewGuid())
-                .RuleFor(p => p.Name, f => f.Name.FirstName())
-                .RuleFor(p => p.FamilyName, f => f.Name.LastName())
-                .RuleFor(p => p.Age, f => f.Random.Float(1, 120))
-                .RuleFor(p => p.BithDate, f => f.Person.DateOfBirth)
-                .RuleFor(p => p.Phones, f => testPhone.Generate(15))
-                .RuleFor(p => p.Addresses, f => testAddress.Generate(10))
-                ;
-        return testPerson.Generate(count);
-    }
-}
+// A simple way to set an anonymous object.
+// new { YourObjectName = YourObject }
+string RenderAnonymousObject(this Template template, object obj, bool inclueBaseClassProperties = false, IFormatProvider formatProvider = null)
+
+// It sets 'RootObject' for your anonymous object.
+// new { RootObject = obj }
+// You have access to it inside a template via 'root_object'.
+RenderObject(this Template template, object obj, bool inclueBaseClassProperties = false, IFormatProvider formatProvider = null)
+
+// Returns all AST nodes recursively.
+// e.g. template.GetAllNodes().Where(node => node is Variable) returns all variables.
+IEnumerable<object> GetAllNodes(this Template template)
+````
+
+### Utilities
+
+To access below utilities you should call `DotLiquidUtility` static class.
+
+```cs
+using DotLiquidExtended;
+
+// You can register your types into the template engine.
+void RegisterSafeTypes(params Type[] types)
+
+// Automatically registers all types and properties of entry assembly.
+// You can register all types of referenced assseblies too.
+void RegisterSafeTypes(bool withReferencedAssemblies = false)
+
+// Automatically registers all types and properties of an specified assembly.
+void RegisterSafeTypes(Assembly assembly)
+
+// Automatically registers all types and properties of all introduced assembelies.
+void RegisterSafeTypes(IEnumerable<Assembly> assemblies) 
 ```
+
+##### Render with Variable Validation
+
+There is a `RenderWithValidation` method inside `DotLiquidUtility` to help you detect a variable with two below conditions:
+1. Variable is `null`.
+2. Variable does not exist.
+
+```cs
+RenderResult RenderWithValidation(string templateText, object data, Func<string, IEnumerable<string>, bool> ignoreValidationCondition = null)
+```
+
+In fact, this method simulate a strict variable/property checking because if `dotLiquid` is not able to find a variable just ignores it and renders nothing without any warning or error.
 
 ### `Liquid` related works
 
