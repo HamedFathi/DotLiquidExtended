@@ -10,7 +10,7 @@ namespace DotLiquidExtended
 {
     public static class DotLiquidUtility
     {
-        private static readonly string _indicator = "%@%@@%@%";
+        internal static readonly string _indicator = "%@%@@%@%";
 
         // Func<string, IEnumerable<string>, bool> => Tag, Filters
         public static RenderResult RenderWithValidation(string templateText, object data, Func<string, IEnumerable<string>, bool> ignoreValidationCondition = null)

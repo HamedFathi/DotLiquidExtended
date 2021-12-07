@@ -4,9 +4,10 @@
     {
         public static string SafeVar(string input, string tagName)
         {
+
             if (input == null)
             {
-                return $"%@%{tagName}%@%";
+                return $"{DotLiquidUtility._indicator}{tagName}{DotLiquidUtility._indicator}";
             }
             return input;
         }
